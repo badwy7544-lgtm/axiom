@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [ahmedPhoto, setAhmedPhoto] = useState("");
+  const [ahmedPhoto, setAhmedPhoto] = useState("/ahmed.jpg");
   const [esraaPhoto, setEsraaPhoto] = useState("");
   const [language, setLanguage] = useState("EN");
 
