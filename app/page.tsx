@@ -143,11 +143,11 @@ export default function Home() {
               ) : (
                 <div className="photo-placeholder">AB</div>
               )}
-              <label className="photo-upload">
-                + Add / Change Photo
-                <input type="file" accept="image/*"
-                  onChange={e => uploadPhoto(e, setAhmedPhoto)} />
-              </label>
+              
+            
+                
+                  
+              
             </div>
             <div className="developer-info">
               <h3>Ahmed <b>Badwy</b></h3>
@@ -163,11 +163,11 @@ export default function Home() {
               ) : (
                 <div className="photo-placeholder">ES</div>
               )}
-              <label className="photo-upload">
-                + Add / Change Photo
-                <input type="file" accept="image/*"
-                  onChange={e => uploadPhoto(e, setEsraaPhoto)} />
-              </label>
+              
+                
+                
+                  
+              
             </div>
             <div className="developer-info">
               <h3>Esraa <b>Selim</b></h3>
