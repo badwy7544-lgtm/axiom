@@ -37,8 +37,10 @@ export async function POST(req: Request) {
       }
 
       const parts: object[] = [
-       { text: ${systemInstruction}\n\n${userText} },
-      ];
+  {
+    text: systemInstruction + "\n\n" + userText
+  },
+];
 
       if (base64Data) {
         parts.push({
