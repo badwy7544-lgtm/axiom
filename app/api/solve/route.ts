@@ -1,4 +1,4 @@
-mport { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 // Three vision calls in parallel can be slow; give the function room to finish.
