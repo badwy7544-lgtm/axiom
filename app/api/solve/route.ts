@@ -15,15 +15,23 @@ export async function POST(req: Request) {
         ? "حل هذه المسألة الهندسية بالتفصيل خطوة بخطوة."
         : "Solve this engineering problem in detail step-by-step.");
 
-    const base64Data = image ? image.split(",")[1] : null;
-    const mimeType = image ? image.split(";")[0].split(":")[1] : "image/jpeg";
+    const imageParts = image ? image.split(",") : [];
+    const base64Data = imageParts.length > 1 ? imageParts.at(1) : null;
+    const mimeType = image
+      ? image.split(";").at(0)?.split(":").at(1) || "image/jpeg"
+      : "image/jpeg";
 
-    // 1. دالة الاتصال بـ Google Gemini
     const callGemini = async () => {
       const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) return language === "AR" ? "⚠️ مفتاح GEMINI_API_KEY غير مضاف بعد في إعدادات Vercel." : "⚠️ GEMINI_API_KEY is not configured in Vercel yet.";
+      if (!apiKey) {
+        return language === "AR"
+          ? "⚠️ مفتاح GEMINI_API_KEY غير مضاف بعد في إعدادات Vercel."
+          : "⚠️ GEMINI_API_KEY is not configured in Vercel yet.";
+      }
 
-      const parts: any[] = [{ text: ${systemInstruction}\n\n${userText} }];
+      const parts: Array<Record<string, unknown>> = [
+        { text: ${systemInstruction}\n\n${userText} },
+      ];
       if (base64Data) {
         parts.push({ inline_data: { mime_type: mimeType, data: base64Data } });
       }
@@ -38,15 +46,20 @@ export async function POST(req: Request) {
       );
       const data = await res.json();
       if (!res.ok) return Gemini Error: ${data.error?.message || "Failed"};
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+      return data.candidates?.at(0)?.content?.parts?.at(0)?.text || "No response";
     };
 
-    // 2. دالة الاتصال بـ OpenAI (ChatGPT)
     const callChatGPT = async () => {
       const apiKey = process.env.OPENAI_API_KEY;
-      if (!apiKey) return language === "AR" ? "⚠️ مفتاح OPENAI_API_KEY غير مضاف بعد في إعدادات Vercel." : "⚠️ OPENAI_API_KEY is not configured in Vercel yet.";
+      if (!apiKey) {
+        return language === "AR"
+          ? "⚠️ مفتاح OPENAI_API_KEY غير مضاف بعد في إعدادات Vercel."
+          : "⚠️ OPENAI_API_KEY is not configured in Vercel yet.";
+      }
 
-      const content: any[] = [{ type: "text", text: userText }];
+      const content: Array<Record<string, unknown>> = [
+        { type: "text", text: userText },
+      ];
       if (image) {
         content.push({ type: "image_url", image_url: { url: image } });
       }
@@ -67,15 +80,18 @@ export async function POST(req: Request) {
       });
       const data = await res.json();
       if (!res.ok) return ChatGPT Error: ${data.error?.message || "Failed"};
-      return data.choices?.[0]?.message?.content || "No response";
+      return data.choices?.at(0)?.message?.content || "No response";
     };
 
-    // 3. دالة الاتصال بـ Anthropic (Claude)
     const callClaude = async () => {
       const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey) return language === "AR" ? "⚠️ مفتاح ANTHROPIC_API_KEY غير مضاف بعد في إعدادات Vercel." : "⚠️ ANTHROPIC_API_KEY is not configured in Vercel yet.";
+      if (!apiKey) {
+        return language === "AR"
+          ? "⚠️ مفتاح ANTHROPIC_API_KEY غير مضاف بعد في إعدادات Vercel."
+          : "⚠️ ANTHROPIC_API_KEY is not configured in Vercel yet.";
+      }
 
-      const content: any[] = [];
+      const content: Array<Record<string, unknown>> = [];
       if (base64Data) {
         content.push({
           type: "image",
@@ -100,10 +116,9 @@ export async function POST(req: Request) {
       });
       const data = await res.json();
       if (!res.ok) return Claude Error: ${data.error?.message || "Failed"};
-      return data.content?.[0]?.text || "No response";
+      return data.content?.at(0)?.text || "No response";
     };
 
-    // تشغيل المحركات الثلاثة معاً في نفس اللحظة
     const [gemini, chatgpt, claude] = await Promise.all([
       callGemini(),
       callChatGPT(),
@@ -111,10 +126,8 @@ export async function POST(req: Request) {
     ]);
 
     return NextResponse.json({ gemini, chatgpt, claude });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Server error" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
