@@ -133,13 +133,13 @@ export default function Home() {
   const t = content[language];
 
   function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.item(0);
     if (!file) return;
     setPdfName(file.name);
   }
 
   function handleQuestionImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.item(0);
     if (!file) return;
     setQuestionImageName(file.name);
     const reader = new FileReader();
@@ -239,7 +239,6 @@ export default function Home() {
         </div>
 
         <div className="upload-grid">
-          {/* رفع ملف PDF */}
           <div className="upload-box">
             <span className="upload-symbol">{pdfName ? "✓" : "＋"}</span>
             <strong>{pdfName ? pdfName : t.upload.pdfTitle}</strong>
@@ -269,11 +268,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* رفع صورة سؤال */}
           <div className="upload-box">
             {questionImage ? (
               <img
                 src={questionImage}
                 alt="Question Preview"
                 style={{
-                  maxWidth: "100%"
+                  maxWidth: "100%",
+                  maxHeight: "180px",
