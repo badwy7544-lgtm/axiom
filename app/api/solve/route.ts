@@ -29,7 +29,7 @@ export async function POST(req: Request) {
           : "⚠️ GEMINI_API_KEY is not configured in Vercel yet.";
       }
 
-      const parts: Array<Record<string, unknown>> = [
+      const parts: object[] = [
         { text: ${systemInstruction}\n\n${userText} },
       ];
       if (base64Data) {
@@ -57,9 +57,7 @@ export async function POST(req: Request) {
           : "⚠️ OPENAI_API_KEY is not configured in Vercel yet.";
       }
 
-      const content: Array<Record<string, unknown>> = [
-        { type: "text", text: userText },
-      ];
+      const content: object[] = [{ type: "text", text: userText }];
       if (image) {
         content.push({ type: "image_url", image_url: { url: image } });
       }
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
           : "⚠️ ANTHROPIC_API_KEY is not configured in Vercel yet.";
       }
 
-      const content: Array<Record<string, unknown>> = [];
+      const content: object[] = [];
       if (base64Data) {
         content.push({
           type: "image",
